@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>LiveCodePlayer</title>
+
+    <script src="jquery.min.js"></script>
+    <script src="jquery-ui/jquery-ui.js"></script>
+    <link href="jquery-ui/query-ui.css" rel="stylesheet">
+
+    <style type="text/css">
+
+      body
+      {
+        font-family: sans-serif;
+        padding: 0;
+        margin: 0;
+      }
+
+      #barra
+      {
+        width: 100%;
+        background-color: #055765;
+        color: #00CC99;
+        padding: 5px;
+        height: 40px;
+        border-bottom: 1px solid black;
+      }
+
+      #logo
+      {
+        float: left;
+        font-size: 115%;
+        padding: 2px;
+        font-weight: bold;
+      }
+
+      #contenedorBotones
+      {
+        margin: 0 auto;
+        width: 280px;
+      }
+
+      .botones
+      {
+        float: left;
+        border: 1px solid gray;
+        padding: 7px;
+        border-right: none;
+
+      }
+
+      #output
+      {
+        border-right: 1px solid gray;
+        border-top-right-radius: 6px;
+        border-bottom-right-radius: 6px;
+      }
+
+      #html
+      {
+        border-top-left-radius: 6px;
+        border-bottom-left-radius: 6px;
+      }
+
+      .botonMarcado
+      {
+        background-color: #738276;
+        cursor: pointer;
+      }
+
+      .botonActivo
+      {
+        background-color: #353839;
+        cursor: pointer;
+      }
+
+      textarea
+      {
+        resize: none;
+        border-top: none;
+        border-bottom: none;
+        border-color: red;
+        color: #00CC99;
+      }
+
+      .panel
+      {
+        float: left;
+        width: 50%;
+        border-left: none;
+      }
+
+      iframe
+      {
+        border: none;
+      }
+
+      .oculto
+      {
+        display: none;
+      }
+
+      body
+      {
+        background-color: #005754;
+      }
+
+      .colorPanel
+      {
+        background-color: #005754;
+      }
+
+
+    </style>
+
+  </head>
+  <body>
+
+    <div id="barra">
+      <div id="logo">
+        LiveCodePlayer
+        <img src="liveCodePlayerLogo.png" width="30px" height="30px">
+      </div>
+      <div id="contenedorBotones">
+        <div class="botones botonActivo" id="html">HTML</div>
+        <div class="botones" id="css">CSS</div>
+        <div class="botones" id="js">javaScript</div>
+        <div class="botones botonActivo" id="output">Output</div>
+      </div>
+    </div>
+
+    <div id="contenedorBody">
+        <textarea id="htmlPanel" class="panel colorPanel"></textarea>
+      <textarea id="cssPanel" class="panel oculto colorPanel"></textarea>
+      <textarea id="jsPanel" class="panel oculto colorPanel"></textarea>
+      <iframe id="outputPanel" class="panel colorPanel"></iframe>
+    </div>
+
+    <script type="text/javascript">
+
+    $(".botones").hover(function()
+    {
+      $(this).addClass("botonMarcado");
+    }, function()
+    {
+      $(this).removeClass("botonMarcado");
+    });
+
+    $(".botones").click(function()
+    {
+      $(this).toggleClass("botonActivo");
+      $(this).removeClass("botonMarcado");
+
+      var panelId = $(this).attr("id") + "Panel";
+      $("#" + panelId).toggleClass("oculto");
+      var numeroPanelesActivos = 4 - $(".oculto").length;
+
+      $(".panel").width(($(window).width() / numeroPanelesActivos) - 20);
+     });
+
+    //calculo para tema de altura y ancho de los paneles
+    $(".panel").height($(window).height() - $("#barra").height());
+    $(".panel").width($(window).width() / 2 - 10);
+
+    actualizarSalida();
+
+    //remplaza el contenido del iframe
+    $("textarea").on('change keyup paste',
+    function()
+    {
+      actualizarSalida();
+    });
+
+    function actualizarSalida()
+    {
+      $("iframe").contents().find("html").html("<!DOCTYPE html> <html> <head> <style type = 'text/css'>" + $("#cssPanel").val()
+      + "</style> </head> <body>" + $("#htmlPanel").val()) + "</body> </html>"
+
+      document.getElementById("outputPanel").contentWindow.eval($("#jsPanel").val());
+
+    }
+
+    </script>
+  </body>
+</html>
